@@ -214,15 +214,6 @@ def encode_systematic(message, gx):
     print(f'Надлишкові символи: {str_poly(rx)}')
     return message + rx
 
-def det_test(matrix):
-    det = gf_mul(matrix[0][0], gf_mul(matrix[1][1], matrix[2][2])) # aei
-    det ^= gf_mul(matrix[0][1], gf_mul(matrix[1][2], matrix[2][0])) # bfg
-    det ^= gf_mul(matrix[0][2], gf_mul(matrix[1][0], matrix[2][1])) # cdh
-    det ^= gf_mul(matrix[0][2], gf_mul(matrix[1][1], matrix[2][0])) # ceg
-    det ^= gf_mul(matrix[0][1], gf_mul(matrix[1][0], matrix[2][2])) # bdi
-    det ^= gf_mul(matrix[0][0], gf_mul(matrix[1][2], matrix[2][1])) # afh
-  
-    return(primitive_by_poly[det])
 
 def gf_matrix_determinant(matrix):
     """Визначник матриці в полі GF(2^m)"""
@@ -294,35 +285,53 @@ def calc_syndromes(message, number_of_errors):
       syndromes[i] = synd
     return syndromes
 
-def generate_syndrome_matrix(synd, matrix_size):
-  matrix = [[0 for _ in range(matrix_size)] for _ in range(matrix_size)]
-  primitive_powers_matrix = [[0 for _ in range(matrix_size)] for _ in range(matrix_size)]
-  for i in range(matrix_size):
-      for j in range(matrix_size):
-          matrix[i][j] = synd[i+j]
-          primitive_powers_matrix[i][j] = primitive_by_poly[synd[i+j]]
-  return matrix, primitive_powers_matrix
+def format_aug_matrix(matrix):
+    res = ''
+    for row in matrix:
+      str_row = list(map(lambda x: 'α^{' + str(primitive_by_poly[x]) +'}' if x>1 else str(x), row))
+      modified_row = str_row[:-1] + ["\\\\bigm|"] + [str_row[-1]]
+      res += '&'.join(modified_row) + '\\\\\\\\'
+    return res
+
+def format_matrix_answer(matrix):
+    sigma = ''
+    for i in range(len(matrix)):
+       sigma += 'σ_{' + str(len(matrix)-i) + '}\\\\\\\\'
+    alpha = ''
+    for row in matrix:
+      # str_row = list(map(lambda x: bin(x)[2:].rjust(field_power, '0'), row))
+      alpha += 'α^{' + str(primitive_by_poly[row[-1]]) +'}' if row[-1]>1 else str(row[-1])
+      alpha += '\\\\\\\\'
+    # print(sigma)
+    # print(res)
+    res = '\\\\(\\\\begin{bmatrix'+'}'+sigma+'\\\\end{bmatrix'+'}'+'='+'\\\\begin{bmatrix'+'}'+alpha+'\\\\end{bmatrix'+'}\\\\)'
+    return res
+
+def format_locator_poly(matrix):
+    res = '1'
+    for i in range(len(matrix)):
+      res += ' + ' 
+      res += 'a^{' + str(primitive_by_poly[matrix[-i-1][-1]]) +'}' if matrix[-i-1][-1]>1 else str(matrix[-i-1][-1])
+      res += 'x^{' + str(i+1) + '}' if i+1>=2 else 'x'
+    return res
 
 def generate_augmented_matrix(synd, matrix_size):
   matrix = [[0 for _ in range(matrix_size+1)] for _ in range(matrix_size)]
-  primitive_powers_matrix = [[0 for _ in range(matrix_size+1)] for _ in range(matrix_size)]
+  # primitive_powers_matrix = [[0 for _ in range(matrix_size+1)] for _ in range(matrix_size)]
   for i in range(matrix_size):
      matrix[i] = synd[i:i+matrix_size+1]
-     primitive_powers_matrix[i] = [primitive_by_poly[i] for i in matrix[i]]
-      # for j in range(matrix_size+1):
-      #     matrix[i][j] = synd[i+j]
-      #     primitive_powers_matrix[i][j] = primitive_by_poly[synd[i+j]]
-  return matrix, primitive_powers_matrix
+     # primitive_powers_matrix[i] = [primitive_by_poly[i] for i in matrix[i]]
+  return matrix #, primitive_powers_matrix
 
-def gf_row_reduce(original_matrix):
-  """Приведення матриці до трикутної форми в полі GF(2^m)"""
+def gf_row_reduce_det(original_matrix):
+  """Метод Гауса в полі GF(2^m)"""
   # Deep copy matrix
   matrix = [i.copy() for i in original_matrix]
   height = len(matrix)
   width = len(matrix[0])
 
-  if height > width:
-    raise ValueError('Matrix should be N x (N+M)')
+  # if height > width:
+  #   raise ValueError('Matrix should be N x (N+M)')
   
   for focus in range(height): # Прямий хід: отримуємо трикутну матрицю
     if matrix[focus][focus] == 0: # Якщо на діагоналі знайдено нульовий елемент...
@@ -332,8 +341,8 @@ def gf_row_reduce(original_matrix):
           break
       else:
         # continue
-        return 0, original_matrix
-        # Якщо такий рядок не знайдено (усі вони нульові), то визначник матриці дорівнює 0
+        return 0, matrix
+        # Якщо такий рядок не знайдено (усі вони нульові), то висначник матриці дорівнює 0
         # raise ValueError('Matrix is Singular')
     
     for row_below in range(focus+1, height):
@@ -344,6 +353,17 @@ def gf_row_reduce(original_matrix):
   det = 1
   for i in range(height):  
     det = gf_mul(det, matrix[i][i])
+    
+  return det, matrix
+
+
+def gf_row_reduce_res(original_matrix):
+  """Метод Гауса-Жордана в полі GF(2^m)"""
+  # Deep copy matrix
+  matrix = [i.copy() for i in original_matrix]
+  height = len(matrix)
+  width = len(matrix[0])
+
 
   for focus in range(height-1, -1, -1): # Зворотній хід: отримуємо одиничну матрицю
     focus_value = matrix[focus][focus]
@@ -355,17 +375,16 @@ def gf_row_reduce(original_matrix):
     for augmented_part in range(height, width):
       matrix[focus][augmented_part] = gf_div(matrix[focus][augmented_part], focus_value)
       
-  return det, matrix
+  return matrix
 
 def chien_search(matrix):
   locators = []
   for x in range(1, number_of_elements): # Підставляємо усі ступені а у вираз
     locator = 1
     for x_degree in range(0, len(matrix)):
-      # print(primitive_by_poly[matrix[-x_degree-1][-1]], x_degree+1)
       locator ^= gf_mul(gf_pow(poly_by_primitive[x], x_degree+1), matrix[-x_degree-1][-1])
     if locator==0: locators.append(number_of_elements-1-x)
-  print(locators)
+  return locators
 
 `
 

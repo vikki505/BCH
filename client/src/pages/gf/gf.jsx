@@ -9,7 +9,7 @@ const Gf = ({ pyodide }) => {
   const [step2, setStep2] = useState(false);
   const [step3, setStep3] = useState(false);
   const [encoding, setEncoding] = useState(false);
-  const [selectedDegree, setSelectedDegree] = useState('3');
+  const [selectedDegree, setSelectedDegree] = useState('4');
   const [selectedPx, setSelectedPx] = useState(primitives[selectedDegree][0]);
   const [gf, setGf] = useState(null);
   const [minPolys, setMinPolys] = useState(null);
@@ -19,7 +19,8 @@ const Gf = ({ pyodide }) => {
   const [inputMessage, setInputMessage] = useState('');
   const [origMessage, setOrigMessage] = useState('');
   const [encodedMessage, setEncodedMessage] = useState('');
-  
+  const [decoding, setDecoding] = useState(false);
+
 
   const handleSwitchChange = () => {
     setSystematicCoding((prevValue) => !prevValue);
@@ -50,6 +51,7 @@ const Gf = ({ pyodide }) => {
   const flushMessage = () => {
     setOrigMessage('')
     setEncodedMessage('')
+    setDecoding(false)
   }
 
   const flushParams = () => {
@@ -120,16 +122,24 @@ const Gf = ({ pyodide }) => {
 
   return (
     <>
+      {/* <Paper elevation={4} sx={{ px: 8, background: 'rgba(255, 255, 255, 0.5)', py: 4, mb: 2 }}>
+        <Typography variant='h1' fontSize={60} align='center'>Навчально-програмний комплекс кодування БЧХ-кодів</Typography>
+      </Paper> */}
+      {/* <Paper elevation={4} sx={{ px: 8, background: 'rgba(255, 255, 255, 0.5)', py: 4, mb: 1 }}>
+      </Paper> */}
+
       <Paper elevation={4} sx={{ minHeight: '70vh', p: 2, background: 'rgba(255, 255, 255, 0.5)', pb: 4 }}>
+
         {/* <Container maxWidth='md' sx={{filter: 'blur(5px)'}}> */}
         <Container maxWidth='md'>
+          <Typography variant='h2' fontSize={52} align='center' mt={2} mb={6} fontWeight={'bold'}>Кодування інформаційної послідовності БЧХ-кодом</Typography>
           <Stack direction={'column'} spacing={2}>
-            <Typography variant='h3' align='center'>Крок 1. Розширене поле Галуа</Typography>
+            <Typography variant='h3' fontSize={40} align='center'>Крок 1. Побудова розширеного поля Галуа</Typography>
             {/* <Typography>Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. </Typography> */}
             {/* <Typography>Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. </Typography> */}
             <Typography variant='h5' align='center'>Введіть параметри поля</Typography>
             <Stack direction={'column'} >
-              <Typography fontStyle='italic'>Оберіть степінь розширеного поля Галуа</Typography>
+              <Typography fontStyle='italic'>Оберіть ступінь розширеного поля Галуа</Typography>
               <FormControl fullWidth>
                 <Slider
                   disabled={gf}
@@ -137,7 +147,7 @@ const Gf = ({ pyodide }) => {
                   valueLabelFormat={(value) => value.toString()}
                   step={1}
                   min={2}
-                  defaultValue={3}
+                  defaultValue={4}
                   max={8}
                   onChange={handleDegChange}
                   aria-labelledby="slider-a"
@@ -185,8 +195,8 @@ const Gf = ({ pyodide }) => {
         <Container maxWidth='md' sx={step2 || { filter: 'blur(5px)', pointerEvents: 'none', userSelect: 'none' }}>
           <Stack direction={'column'}>
             <Stack direction={'column'} spacing={2} mb={4} textAlign={'center'}>
-              <Typography variant='h3' align='center' pt={2}>Крок 2. Створення цикломатичних класів</Typography>
-              <Typography>Об’єднаємо примітивні елементи у цикломатичні класи за степенями:</Typography>
+              <Typography variant='h3' fontSize={40} align='center' pt={2}>Крок 2. Створення циклотомічних класів. Обчислення мінімальних многочленів</Typography>
+              <Typography>Об’єднаємо примітивні елементи у циклотомічні класи за степенями:</Typography>
               <Latex>{'$\\mathit{α^i}$: $\\mathit{C_i=\\{i, 2i, 2^2i, 2^3i,...,2^ki\\}}$.'}</Latex>
               <Typography>Мінімальні многочлени кожного класу обчислсимо за формулою: </Typography>
               <Latex>{'$\\mathit{φ_i(x) =(x+a^i)(x+a^{2i})(x+a^{2^2i})...(x+a^{2^ki})}$.'}</Latex>
@@ -225,12 +235,12 @@ const Gf = ({ pyodide }) => {
       </Paper>
 
 
-      <Paper elevation={4} sx={{ minHeight: '70vh', p: 2, background: 'rgba(255, 255, 255, 0.5)', pb: 4, my: 4 }}>
+      <Paper elevation={4} sx={{ minHeight: '45vh', p: 2, background: 'rgba(255, 255, 255, 0.5)', pb: 4, my: 4 }}>
         <Container maxWidth='md' sx={step3 || { filter: 'blur(5px)', pointerEvents: 'none', userSelect: 'none' }}>
           <Stack direction={'column'} spacing={4}>
-            <Typography variant='h3' align='center' pt={2}> Крок 3. Оберіть параметри коду</Typography>
+            <Typography variant='h3' fontSize={40} align='center' pt={2}> Крок 3. Вибір параметрів коду</Typography>
             <Stack direction={'column'} spacing={4}>
-              <Stack direction={'row'} spacing={2}>
+              <Stack direction={'row'} spacing={4}>
                 <Stack direction={'column'} spacing={1}>
                   <Typography fontStyle='italic'>Оберіть кількість допустимих помилок</Typography>
                   <FormControl fullWidth>
@@ -272,14 +282,6 @@ const Gf = ({ pyodide }) => {
                   }}>
                     <Latex>{'$\\mathit{g(x)=' + generator[2] + '}$'}</Latex>
                   </Typography>}
-                <Stack direction='row' spacing={2} alignItems={'center'} fontStyle={'italic'}>
-                  <Typography>Оберіть тип кодування: </Typography>
-                  <FormControlLabel
-                    control={<Switch checked={systematicCoding} onChange={handleSwitchChange} />}
-                    disabled={encoding}
-                    label={systematicCoding ? 'Систематичне кодування (інформаційні символи відділені від коригуючих)' : 'Несистематичне кодування (інформаційні символи неможливо відрізнити)'}
-                  />
-                </Stack>
               </Stack>
               {encoding ?
                 <Button fullWidth variant='contained' onClick={flushParams}>Змінити параметри коду</Button>
@@ -295,93 +297,101 @@ const Gf = ({ pyodide }) => {
       <Paper elevation={4} sx={{ minHeight: '70vh', p: 2, background: 'rgba(255, 255, 255, 0.5)', pb: 4, my: 4 }}>
         <Container maxWidth='md' sx={encoding || { filter: 'blur(5px)', pointerEvents: 'none', userSelect: 'none' }}>
           <Stack direction={'column'} spacing={2}>
-                <Typography variant='h3' align='center' pt={2}>Крок 4. Введіть повідомлення яке хочете закодувати</Typography>
-                <Stack direction={'column'} pb={2} spacing={2}>
-                  <Typography fontStyle='italic'>Введіть початкове повідомлення у двійковому вигляді для кодування. {generator && (`Кількість символів: ${generator[0]}`)}.</Typography>
-                  <TextField
-                    fullWidth
-                    disabled={encodedMessage}
-                    label="Початкове повідомлення"
-                    variant="outlined"
-                    id="binaryInput"
-                    value={inputMessage}
-                    onChange={handleMessageChange}
-                    inputProps={{
-                      maxLength: generator ? generator[0]: 0,
-                      pattern: '[0-1]*',
-                    }}
-                  />
+            <Typography variant='h3' fontSize={40} align='center' pt={2}>Крок 4. Кодування повідомлення</Typography>
+            <Stack direction={'column'} pb={2} spacing={2}>
+              <Typography fontStyle='italic'>Введіть початкове повідомлення у двійковому вигляді для кодування. {generator && (`Кількість символів: ${generator[0]}`)}.</Typography>
+              <TextField
+                fullWidth
+                disabled={encodedMessage}
+                label="Початкове повідомлення"
+                variant="outlined"
+                id="binaryInput"
+                value={inputMessage}
+                onChange={handleMessageChange}
+                inputProps={{
+                  maxLength: generator ? generator[0] : 0,
+                  pattern: '[0-1]*',
+                }}
+              />
+              <Stack direction='row' spacing={2} alignItems={'center'} fontStyle={'italic'}>
+                <Typography>Оберіть тип кодування: </Typography>
+                <FormControlLabel
+                  control={<Switch checked={systematicCoding} onChange={handleSwitchChange} />}
+                  disabled={encodedMessage}
+                  label={systematicCoding ? 'Систематичне кодування (інформаційні символи відділені від коригуючих)' : 'Несистематичне кодування (інформаційні символи неможливо відрізнити)'}
+                />
+              </Stack>
+            </Stack>
+            {encodedMessage ?
+              <Button fullWidth variant='contained' onClick={flushMessage}>Змінити початкове повідомлення</Button>
+              :
+              <Button fullWidth variant='contained' onClick={encodeMsg} disabled={inputMessage === ''}>Закодувати повідомлення</Button>}
+            {encodedMessage && (
+              <>
+                <Typography variant='h4' align='center' pt={2}>Результат {systematicCoding ? 'систематичного' : 'несистематичного'} кодування</Typography>
+                <Stack direction='column' align="center" spacing={1}>
+                  <Typography>Початкове повідомлення: </Typography>
+                  <Typography align='center' overflow={"auto"} sx={{
+                    '&::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
+                  }}>
+                    <Latex>{'$\\mathit{u(x)=' + origMessage + '}$'}</Latex>
+                  </Typography>
+                  <Typography>Формула кодування: </Typography>
+                  {systematicCoding ?
+                    <Typography align='center'>
+                      <Latex>{'\\(\\mathit{ν(x)=u(x)\\cdot{}x^{' + generator[1] + '}+u(x)\\bmod{}g(x)}\\)'}</Latex>
+                    </Typography>
+                    :
+                    <Typography align='center'>
+                      <Latex>{'$\\mathit{ν(x)=u(x)\\cdot{}g(x)}$'}</Latex>
+                    </Typography>
+                  }
+                  <Typography>Закодоване повідомлення (поліном): </Typography>
+                  <Typography align='center' overflow={"auto"} sx={{
+                    '&::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
+                  }}>
+                    <Latex>{'$\\mathit{ν(x)=' + encodedMessage[0] + '}$'}</Latex>
+                  </Typography>
+                  <Typography >Закодоване повідомлення у двійковому вигляді: </Typography>
+                  <Typography align='center' overflow={"auto"} sx={{
+                    '&::-webkit-scrollbar': {
+                      width: '5px',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#888',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: '#555',
+                    },
+                  }}><Latex>{'$' + encodedMessage[1] + '$'}</Latex> </Typography>
+                  <Stack direction={'row'} spacing={1} pt={2}>
+                    {/* <Button fullWidth variant='contained' onClick={() => { }}>Повернутись до меню</Button> */}
+                    <Button fullWidth variant='contained' onClick={() => { setDecoding(true) }}>Перейти до декодування</Button>
+                  </Stack>
                 </Stack>
-                {encodedMessage ?
-                  <Button fullWidth variant='contained' onClick={flushMessage}>Змінити початкове повідомлення</Button>
-                  :
-                  <Button fullWidth variant='contained' onClick={encodeMsg} disabled={inputMessage === ''}>Закодувати повідомлення</Button>}
-                {encodedMessage && (
-                  <>
-                    <Typography variant='h4' align='center' pt={2}>Результат {systematicCoding ? 'систематичного' : 'несистематичного'} кодування</Typography>
-                    <Stack direction='column' align="center" spacing={1}>
-                      <Typography>Початкове повідомлення: </Typography>
-                      <Typography align='center' overflow={"auto"} sx={{
-                        '&::-webkit-scrollbar': {
-                          width: '5px',
-                        },
-                        '&::-webkit-scrollbar-thumb': {
-                          backgroundColor: '#888',
-                        },
-                        '&::-webkit-scrollbar-thumb:hover': {
-                          backgroundColor: '#555',
-                        },
-                      }}>
-                        <Latex>{'$\\mathit{u(x)=' + origMessage + '}$'}</Latex>
-                      </Typography>
-                      <Typography>Формула кодування: </Typography>
-                      {systematicCoding ?
-                        <Typography align='center'>
-                          <Latex>{'$\\mathit{ν(x)=u(x)\\cdot{}x^{' + generator[1] + '}+u(x)\\ {}mod\\ {}g(x)}$'}</Latex>
-                        </Typography>
-                        :
-                        <Typography align='center'>
-                          <Latex>{'$\\mathit{ν(x)=u(x)\\cdot{}g(x)}$'}</Latex>
-                        </Typography>
-                      }
-                      <Typography>Закодоване повідомлення (поліном): </Typography>
-                      <Typography align='center' overflow={"auto"} sx={{
-                        '&::-webkit-scrollbar': {
-                          width: '5px',
-                        },
-                        '&::-webkit-scrollbar-thumb': {
-                          backgroundColor: '#888',
-                        },
-                        '&::-webkit-scrollbar-thumb:hover': {
-                          backgroundColor: '#555',
-                        },
-                      }}>
-                        <Latex>{'$\\mathit{ν(x)=' + encodedMessage[0] + '}$'}</Latex>
-                      </Typography>
-                      <Typography>Закодоване повідомлення у двійковому вигляді: </Typography>
-                      <Latex>{'$' + encodedMessage[1] + '$'}</Latex>
-                      <Stack direction={'row'} spacing={1} pt={2}>
-                        <Button fullWidth variant='contained' onClick={()=>{}}>Повернутись до меню</Button>
-                        <Button fullWidth variant='contained' onClick={()=>{}}>Перейти до декодування</Button>
-                      </Stack>
-                      {/* <Decoder maxErr={maxErr} pyodide={pyodide} encodedMessage={encodedMessage} gf={gf.result} deg={gf.deg} px={gf.px.name}/> */}
-                      {/* {corruptedMsg ?
-                      <Button fullWidth variant='contained' onClick={flushCorruptedMsg}>Змінити значення помилки</Button>
-                      :
-                      <Button fullWidth variant='contained' onClick={randomCorruptedMsg}>Додати випадкову помилку до повідомлення</Button>
-                    }
-                    {(
-                      <>
-                        <Typography variant='h5'>Повідомлення після передачі каналом зв'язку: </Typography>
-                        <Latex>{'$' + corruptedMsg + '$'}</Latex>
-                      </>
-                    )} */}
-                    </Stack>
-                  </>
-                )}
+              </>
+            )}
           </Stack>
         </Container>
       </Paper >
+      {decoding && <Decoder maxErr={maxErr} pyodide={pyodide} encodedMessage={encodedMessage} systematicCoding={systematicCoding} gf={gf.result} deg={gf.deg} px={gf.px.name} gx={generator[2]} gx_power={generator[0]} />}
+
     </>
   );
 };

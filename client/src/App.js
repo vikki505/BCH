@@ -6,7 +6,6 @@ import scriptText from './python/bch.py';
 
 const App = () => {
   const [pyodide, setPyodide] = useState(null);
-  const [element, setElement] = useState('main');
 
   useEffect(() => {
     const init = async () => {
@@ -18,20 +17,21 @@ const App = () => {
     }
     init();
   }, []);
+  
 
   if (!pyodide) {
     return (
-      <Container maxWidth="lg" sx={{ display: 'grid', placeItems: 'center', zIndex: 2, position: 'relative', height: '100vh', width: '100%' }}>
-        <Stack direction='column' alignItems='center' spacing={2} mt='-10%'>
-          <CircularProgress />
-        </Stack>
-      </Container>
+        <Container maxWidth="lg" sx={{ display: 'grid', placeItems: 'center', zIndex: 2, position: 'relative', height: '100vh', width: '100%' }}>
+          <Stack direction='column' alignItems='center' spacing={2} mt='-10%'>
+            <CircularProgress />
+          </Stack>
+        </Container>
     );
   }
 
   return (
     <Container sx={{ pt: 4, zIndex: 2, position: 'relative', minHeight: '100vh', pb: 4 }}>
-      <Gf pyodide={pyodide}/>
+      <Gf pyodide={pyodide} />
     </Container>
   );
 }
