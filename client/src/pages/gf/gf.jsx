@@ -122,21 +122,12 @@ const Gf = ({ pyodide }) => {
 
   return (
     <>
-      {/* <Paper elevation={4} sx={{ px: 8, background: 'rgba(255, 255, 255, 0.5)', py: 4, mb: 2 }}>
-        <Typography variant='h1' fontSize={60} align='center'>Навчально-програмний комплекс кодування БЧХ-кодів</Typography>
-      </Paper> */}
-      {/* <Paper elevation={4} sx={{ px: 8, background: 'rgba(255, 255, 255, 0.5)', py: 4, mb: 1 }}>
-      </Paper> */}
-
       <Paper elevation={4} sx={{ minHeight: '70vh', p: 2, background: 'rgba(255, 255, 255, 0.5)', pb: 4 }}>
 
-        {/* <Container maxWidth='md' sx={{filter: 'blur(5px)'}}> */}
         <Container maxWidth='md'>
           <Typography variant='h2' fontSize={52} align='center' mt={2} mb={6} fontWeight={'bold'}>Кодування інформаційної послідовності БЧХ-кодом</Typography>
           <Stack direction={'column'} spacing={2}>
             <Typography variant='h3' fontSize={40} align='center'>Крок 1. Побудова розширеного поля Галуа</Typography>
-            {/* <Typography>Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. </Typography> */}
-            {/* <Typography>Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. Теорія про поля галуа. </Typography> */}
             <Typography variant='h5' align='center'>Введіть параметри поля</Typography>
             <Stack direction={'column'} >
               <Typography fontStyle='italic'>Оберіть ступінь розширеного поля Галуа</Typography>

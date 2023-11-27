@@ -34,7 +34,6 @@ const Decoder = ({ encodedMessage, gf, maxErr, systematicCoding, pyodide, deg, p
         synd_format_table(synd)
     `);
     setSyndrome(synd_table.toJs())
-    // console.log(synd_table.toJs())
   };
 
   const findSyndromeMatrix = async () => {
@@ -43,15 +42,12 @@ const Decoder = ({ encodedMessage, gf, maxErr, systematicCoding, pyodide, deg, p
       format_aug_matrix(synd_matrix)
     `);
     setSyndromeMatrix(synd_matrix)
-    console.log("worked!!")
-    // console.log(synd_matrix)
     const det = await pyodide.runPythonAsync(`
       det, triangle_matrix = gf_row_reduce_det(synd_matrix)
       if det==0: numErr-=1
       'α^{' + str(primitive_by_poly[det]) +'}' if det>1 else str(det) 
     `);
     setDet(det)
-    // console.log(det)
     const det_matrix = await pyodide.runPythonAsync(`
     format_aug_matrix(triangle_matrix)
     `);
@@ -79,7 +75,6 @@ const Decoder = ({ encodedMessage, gf, maxErr, systematicCoding, pyodide, deg, p
     const loc = await pyodide.runPythonAsync(`
       chien_search(final_matrix)
     `);
-    console.log(loc.toJs())
     setLocators(loc.toJs())
   };
 
@@ -98,8 +93,6 @@ const Decoder = ({ encodedMessage, gf, maxErr, systematicCoding, pyodide, deg, p
       .map((char, index) => (locators.includes(index) ? (char === '0' ? '1' : '0') : char))
       .reverse()
       .join('')
-    // const fixed_msg_int = parseInt(fixed, 2)
-    // console.log(fixed_msg_int)
     await pyodide.runPythonAsync(`
       fixed_message = int("${fixed}", 2)
     `);
@@ -121,7 +114,6 @@ const Decoder = ({ encodedMessage, gf, maxErr, systematicCoding, pyodide, deg, p
   };
 
   const randomCorruptedMsg = async () => {
-    // console.log(gf)
     function getRandomInt(min, max) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
     }
@@ -130,7 +122,6 @@ const Decoder = ({ encodedMessage, gf, maxErr, systematicCoding, pyodide, deg, p
       errPositions.add(getRandomInt(0, encodedMessage[1].length - 1));
     }
 
-    // console.log(errPositions)
     const corruptedColorMsg = encodedMessage[1]
       .split('')
       .map((char, index) => (errPositions.has(index) ? (char === '0' ? '\\textcolor{red}{1}' : '\\textcolor{red}{0} ') : char))
@@ -142,14 +133,11 @@ const Decoder = ({ encodedMessage, gf, maxErr, systematicCoding, pyodide, deg, p
       .map((char, index) => (errPositions.has(index) ? (char === '0' ? '1' : '0') : char))
       .join('')
     setCorruptedMessage(corruptedMessage)
-    console.log(corruptedMessage)
 
-    // const corruptedInt = parseInt(corruptedMessage, 2)
     const corrupted = await pyodide.runPythonAsync(`
         corrupted_msg = int("${corruptedMessage}", 2)
         bin(corrupted_msg)[2:].rjust(number_of_elements-1, '0')
     `);
-    console.log(corrupted)
   };
 
   return (
