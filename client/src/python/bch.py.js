@@ -37,8 +37,6 @@ def gf_init_table():
 
     max_poly = (1<<field_power) # Якщо GF(2^3) - то ця змінна = 1000 (тобто x^3)
     
-    # Нехай 'а' - примітивний елемент поля GF(2^m). В циклі нижче маємо: i - степінь примітивного елемента, 
-    # field_element - значення елемента поля, може бути визначено як а^i, де а - примітивний елемент поля. 
     for stepen in range(number_of_elements - 1):
         if stepen == 0:
             # a^0 = 1
@@ -46,20 +44,7 @@ def gf_init_table():
         else:
             # a^1 = x, a^2 = x^2, a^3 = x^3, a^4 = x^4, ...
             polinom <<=  1
-            # Якщо степінь многочлена елемента вища або дорінює степеню поля маємо провести заміну
             if powerof(polinom) >= field_power:
-                # Для прикладу візьмемо GF(2^3) з примітивним многочленом p = x^3+x+1 (0b1011).
-                # Відомо, що для примітивного елемента а->x, a^3+a+1=0 -> x^3+x+1=0, x^3=x+1 
-                # Іншими словами, максимальний степінь p (x^3) дорівнює решті його виразу (x+1)
-                
-                # Отже, нам треба відняти макс. степінь p і додати залишок p без найвищого степеня
-                
-                # Многочлен p задається у двійковій формі p=x^3+x+1 <-> (0b1011).
-                # Нам треба розділити старший розряд 0b1000 (тобто x^3) та залишок 0b0011 (тобто x+1)
-                # Кількість елементів поля GF(2^m) (що обчислюється як 2^m) якраз відповідає старшому розряду 0b100 
-                # Щоб отримати залишок використаємо оператор AND над маскою всіх нижчих ступенів.
-                # Така маска виходить якщо відняти від 2^m одиницю і дорівнює 0b0111.
-                
                 polinom = (polinom - max_poly) ^ (px & (max_poly-1))
 
         poly_by_primitive[stepen] = polinom
@@ -162,9 +147,6 @@ def calculate_minimal_polys(cyclotomic_classes):
       for degree in cyclotomic_class:
         # Мінімальний многочлен φ(х) = (х + a1)(х + a2)(х + a3), де а - елементи циклотомічного класу
         min_poly = gf_mul(min_poly, (0b10 ^ poly_by_primitive[degree]))
-        # min_poly = multiply_polynomials_GF2((0b10 ^ gf_exp[degree]), min_poly)
-
-        # Код вище має ймовірність зламатися, треба враховувати
       if min_poly < 2**len(cyclotomic_class):
           min_poly ^= px # Фікс обмежень множення в полі Галуа
       minimal_polys.append(min_poly)
@@ -172,23 +154,19 @@ def calculate_minimal_polys(cyclotomic_classes):
     return minimal_polys
 
 def div_binary_poly(a, b):
-    a_degree = powerof(a)  # Степень старшего разряда делимого
-    b_degree = powerof(b)  # Степень старшего разряда делителя
+    a_degree = powerof(a)  
+    b_degree = powerof(b) 
 
     result = 0
     remainder = a
     while a_degree >= b_degree:
-        # Вычисляем разницу степеней и сдвигаем делитель
         degree_difference = a_degree - b_degree
         shifted_divisor = b << degree_difference
 
-        # Вычитаем сдвинутый делитель из делимого
         remainder ^= shifted_divisor
 
-        # Обновляем степень старшего разряда делимого
         a_degree = powerof(remainder)
 
-        # Обновляем результат деления
         result ^= 1 << degree_difference
 
     return result, remainder
