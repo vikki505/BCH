@@ -2,8 +2,9 @@
 
  body {
   margin: 0;
-  font-family: "Cormorant Garamond", serif,
-    ;
+  font-family: "Cormorant Garamond", serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: #74EBD5;
+  background-image: linear-gradient(90deg, #74EBD5 0%, #9FACE6 100%);
 }

@@ -1,7 +1,7 @@
 import { CircularProgress, Container, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 import './App.css';
-import Gf from './pages/gf/gf';
+import Encoder from './pages/encoder/encoder';
 import scriptText from './python/bch.py';
 
 const App = () => {
@@ -12,8 +12,8 @@ const App = () => {
       const pyodide = await window.loadPyodide({
         indexURL: "https://cdn.jsdelivr.net/pyodide/v0.18.1/full/"
       });
-      setPyodide(pyodide);
       pyodide.runPythonAsync(scriptText)
+      setPyodide(pyodide);
     }
     init();
   }, []);
@@ -31,7 +31,7 @@ const App = () => {
 
   return (
     <Container sx={{ pt: 4, zIndex: 2, position: 'relative', minHeight: '100vh', pb: 4 }}>
-      <Gf pyodide={pyodide} />
+      <Encoder pyodide={pyodide} />
     </Container>
   );
 }
